@@ -33,11 +33,13 @@ import '../assets/scss/app.scss';
 // Answers are compared loosely so "Amber", " amber " and "amber" all pass.
 const normalize = (value) => String(value ?? '').trim().toLowerCase();
 
-// Optional launch parameters read from the page URL: ?email=&token=&locale=
+// Optional launch parameters read from the page URL:
+//   ?endpoint=&email=&token=&locale=
 const readUrlParams = () => {
   try {
     const p = new URLSearchParams(window.location.search);
     return {
+      endpoint: p.get('endpoint') || undefined,
       email: p.get('email') || undefined,
       token: p.get('token') || undefined,
       locale: p.get('locale') || undefined,
@@ -82,6 +84,9 @@ export default function App() {
     // (1) Create the client instance. `ESCAPP` is the global installed by the
     //     <script src="./escapp.js"> tag in index.html — it is NOT imported.
     const clientSettings = { ...ESCAPP_CLIENT_SETTINGS };
+    // A URL-provided endpoint overrides the committed default, so this same
+    // build can serve any Escapp escape room.
+    if (params.endpoint) clientSettings.endpoint = params.endpoint;
     // While developing locally, run in preview mode so there is no login wall.
     if (import.meta.env.DEV) clientSettings.preview = true;
     // A token in the URL -> authenticate silently as that participant.

@@ -36,11 +36,16 @@ participant's credentials and language to the URL. All are optional:
 
 | Param | Example | Effect |
 |-------|---------|--------|
-| `token` | `?token=ABC123` | authenticates the participant (real progress is recorded) |
+| `endpoint` | `?endpoint=https://escapp.es/api/escapeRooms/752` | which escape room to connect to; overrides the committed default |
+| `token` | `&token=ABC123` | authenticates the participant (real progress is recorded) |
 | `email` | `&email=you@example.com` | paired with `token` for authentication |
 | `locale` | `&locale=es` | UI language (`en`, `es`, …); overrides the default |
 
-Example: `.../?email=you@example.com&token=ABC123&locale=es`
+Example: `.../?endpoint=https://escapp.es/api/escapeRooms/752&email=you@example.com&token=ABC123&locale=es`
+
+> The `endpoint` value should be URL-encoded when it contains special characters.
+> Note that a different escape room may have different puzzle ids/solutions than the
+> `linkedPuzzleIds` in `src/constants/constants.jsx`.
 
 Without a `token` you can still explore the room (answers are checked locally), but
 solves are not recorded on the Escapp server.
