@@ -1,0 +1,19 @@
+/* Global reset + page background. Component styling lives in assets/scss/app.scss. */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #e6f1ff;
+  background: #05070d;
+  overflow-x: hidden;
+}

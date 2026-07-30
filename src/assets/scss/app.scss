@@ -1,0 +1,669 @@
+// ===========================================================================
+//  Theme: a dark "server room / terminal" look. Colour-codes each technology:
+//  HTML = orange, CSS = blue, JS = yellow.
+// ===========================================================================
+$bg:        #05070d;
+$panel:     #0d1524;
+$panel-2:   #111c30;
+$ink:       #e6f1ff;
+$muted:     #8aa0c0;
+$accent:    #35e0c0; // terminal green-cyan
+$html:      #e8652b;
+$css:       #2e7dd6;
+$js:        #f0c040;
+$danger:    #ff5c6c;
+$border:    rgba(120, 160, 220, 0.18);
+
+// The bundled Font Awesome 5 sets the icon font on `.fas` (solid), but we use
+// the shorter `.fa fa-…` convention throughout. Map `.fa` to the solid face so
+// those glyphs actually render (the webfonts live in public/webfonts/).
+.fa {
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+}
+
+#global_wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 3vh 16px;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(53, 224, 192, 0.10), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 3px),
+    $bg;
+}
+
+.loading {
+  color: $accent;
+  font-family: monospace;
+  font-size: 1.2rem;
+  margin-top: 30vh;
+  animation: blink 1s steps(2) infinite;
+}
+@keyframes blink { 50% { opacity: 0.35; } }
+
+.screen {
+  width: 100%;
+  max-width: 860px;
+  animation: fade-in 0.4s ease;
+}
+@keyframes fade-in { from { opacity: 0; transform: translateY(8px); } }
+
+// ---- Terminal card (intro + escaped) --------------------------------------
+.terminal_card {
+  background: $panel;
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.terminal_bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: $panel-2;
+  border-bottom: 1px solid $border;
+  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .dot.red { background: #ff5f56; }
+  .dot.yellow { background: #ffbd2e; }
+  .dot.green { background: #27c93f; }
+  .bar_title { margin-left: 8px; color: $muted; font-family: monospace; font-size: 0.85rem; }
+}
+.terminal_body {
+  padding: 32px 30px 36px;
+  &.center { text-align: center; }
+}
+
+h1.glow {
+  font-size: 2rem;
+  letter-spacing: 0.5px;
+  color: #fff;
+  text-shadow: 0 0 18px rgba(53, 224, 192, 0.55);
+}
+.subtitle { color: $accent; margin-top: 6px; font-family: monospace; }
+.story { color: $muted; line-height: 1.7; margin-top: 18px; white-space: pre-line; }
+
+// ---- Dramatic intro --------------------------------------------------------
+.danger_frame { border-color: rgba(255, 92, 108, 0.35); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 60px rgba(255, 92, 108, 0.08); }
+.terminal_bar .rec {
+  margin-left: auto;
+  color: $danger;
+  font-family: monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  animation: pulse 1.4s infinite;
+}
+.lockdown_banner {
+  display: inline-block;
+  color: $danger;
+  border: 1px solid rgba(255, 92, 108, 0.5);
+  background: rgba(255, 92, 108, 0.08);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: monospace;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 0.85rem;
+  animation: pulse 1.6s infinite;
+}
+.boot_log {
+  margin-top: 18px;
+  color: #7ee0a0;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 6.5em;
+}
+.caret { color: $accent; }
+.caret.blink { animation: blink 1s steps(2) infinite; }
+.reveal {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 0.6s ease, max-height 0.8s ease;
+  &.shown { max-height: 1200px; opacity: 1; }
+}
+.signature {
+  margin-top: 14px;
+  color: $danger;
+  font-family: monospace;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+.primary_button.danger {
+  background: linear-gradient(180deg, #ff6b78, #e23b4c);
+  color: #fff;
+}
+
+// ---- In-fiction transmission block (villain taunt on each door) ------------
+.transmission {
+  margin-top: 18px;
+  border-left: 3px solid $danger;
+  background: rgba(255, 92, 108, 0.06);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  .from {
+    display: inline-block;
+    color: $danger;
+    font-family: monospace;
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    i { margin-right: 6px; }
+  }
+  p { color: #d8c2c6; line-height: 1.6; font-style: italic; }
+}
+
+.tech_badges {
+  display: flex;
+  gap: 10px;
+  margin: 22px 0 26px;
+  flex-wrap: wrap;
+  .badge {
+    font-family: monospace;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid $border;
+  }
+  .badge.html { color: $html; }
+  .badge.css { color: $css; }
+  .badge.js { color: $js; }
+}
+
+// ---- Buttons ---------------------------------------------------------------
+.primary_button {
+  background: linear-gradient(180deg, #5ce9cf, #23c1a4);
+  color: #04211c;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.08s ease, filter 0.15s ease;
+  &:hover:not(:disabled) { filter: brightness(1.08); }
+  &:active:not(:disabled) { transform: translateY(1px); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  i { margin-left: 6px; }
+}
+.link_button {
+  background: none;
+  border: none;
+  color: $accent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px 0;
+  i { margin-right: 5px; }
+}
+
+// ---- Room screen -----------------------------------------------------------
+.room_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.progress {
+  font-family: monospace;
+  color: $accent;
+  font-size: 0.9rem;
+}
+.door_tabs { display: flex; gap: 8px; }
+.door_tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: $panel;
+  border: 1px solid $border;
+  color: $muted;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  &:hover { color: $ink; }
+  &.active { border-color: $accent; color: $ink; box-shadow: 0 0 0 1px $accent inset; }
+  &.solved { color: #7ee0a0; }
+}
+
+.puzzle_card {
+  background: $panel;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.puzzle_title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  h2 { font-size: 1.25rem; color: #fff; flex: 1; }
+  i { color: $accent; font-size: 1.2rem; }
+  .lock_state {
+    font-family: monospace;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: rgba(255, 92, 108, 0.15);
+    color: $danger;
+    border: 1px solid rgba(255, 92, 108, 0.4);
+    &.open {
+      background: rgba(126, 224, 160, 0.15);
+      color: #7ee0a0;
+      border-color: rgba(126, 224, 160, 0.4);
+    }
+  }
+}
+
+.lesson, .task { margin-top: 20px; }
+.lesson h3, .task h3 {
+  color: $accent;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.lesson p, .task p { color: $muted; line-height: 1.6; }
+
+.code_block {
+  margin-top: 12px;
+  background: #060a12;
+  border: 1px solid $border;
+  border-left: 3px solid $accent;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #cfe3ff;
+  white-space: pre;
+  &.html { border-left-color: $html; }
+  &.css { border-left-color: $css; }
+  &.javascript { border-left-color: $js; }
+}
+
+.answer_form {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+  input {
+    flex: 1;
+    min-width: 200px;
+    background: #060a12;
+    border: 1px solid $border;
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: $ink;
+    font-size: 1rem;
+    font-family: monospace;
+    &:focus { outline: none; border-color: $accent; box-shadow: 0 0 0 1px $accent; }
+    &:disabled { opacity: 0.6; }
+  }
+}
+
+.feedback {
+  margin-top: 14px;
+  font-weight: 600;
+  i { margin-right: 6px; }
+  &.ok { color: #7ee0a0; }
+  &.nok { color: $danger; }
+}
+
+.hint_area { margin-top: 18px; border-top: 1px dashed $border; padding-top: 14px; }
+.hint_text { color: $muted; margin-top: 8px; font-style: italic; line-height: 1.5; }
+
+// ---- Escaped screen --------------------------------------------------------
+.trophy { font-size: 3rem; color: $js; margin-bottom: 12px; }
+.recap_title {
+  color: $accent;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+  margin: 26px 0 12px;
+}
+.recap {
+  list-style: none;
+  text-align: left;
+  max-width: 620px;
+  margin: 0 auto;
+  li {
+    color: $muted;
+    padding: 10px 0;
+    border-bottom: 1px solid $border;
+    line-height: 1.5;
+    i { color: $accent; margin-right: 8px; }
+    strong { color: $ink; }
+  }
+}
+
+// ---- Live countdown timer --------------------------------------------------
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: $accent;
+  padding: 6px 12px;
+  border: 1px solid $border;
+  border-radius: 8px;
+  background: $panel;
+  i { opacity: 0.8; }
+  &.danger { color: $danger; border-color: rgba(255, 92, 108, 0.5); animation: pulse 1s infinite; }
+  &.out { color: $danger; }
+}
+@keyframes pulse { 50% { opacity: 0.5; } }
+
+// ---- Interactive widgets (shared) -----------------------------------------
+.widget { margin-top: 12px; }
+
+// HTML: source vs rendered toggle
+.view_toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  button {
+    background: $panel-2;
+    border: 1px solid $border;
+    color: $muted;
+    padding: 7px 12px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    i { margin-right: 5px; }
+    &.active { color: $ink; border-color: $html; box-shadow: 0 0 0 1px $html inset; }
+  }
+}
+.rendered_frame {
+  iframe {
+    width: 100%;
+    height: 160px;
+    border: 1px solid $border;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .frame_caption { color: $muted; font-size: 0.85rem; margin-top: 8px; line-height: 1.5; }
+}
+
+// CSS: specificity duel
+.spec_duel {
+  display: flex;
+  gap: 12px;
+  margin: 14px 0 10px;
+  flex-wrap: wrap;
+}
+.spec_card {
+  flex: 1;
+  min-width: 180px;
+  background: #060a12;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.25s ease;
+  .sel { color: $css; font-size: 1.05rem; font-weight: 700; }
+  .kind { color: $muted; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .score { color: $ink; font-size: 0.85rem; strong { color: $js; } }
+  .verdict { font-size: 0.85rem; i { color: $js; margin-right: 4px; } code { color: $accent; } }
+  &.winner { border-color: $accent; box-shadow: 0 0 0 1px $accent inset, 0 0 22px rgba(53, 224, 192, 0.25); }
+  &.loser { opacity: 0.5; text-decoration: none; .sel { text-decoration: line-through; } }
+}
+
+// CSS: "Cascade Duel" mini-game
+.duel_prompt {
+  margin: 14px 0 10px;
+  color: $ink;
+  font-weight: 600;
+  i { color: $js; margin-right: 6px; }
+  .tries { color: $danger; font-weight: 400; margin-left: 8px; font-family: monospace; font-size: 0.85rem; }
+}
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.swatch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #060a12;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: $ink;
+  font-family: monospace;
+  transition: transform 0.06s ease, box-shadow 0.12s ease, opacity 0.2s ease;
+  .chip { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.25); }
+  &:hover:not(:disabled) { box-shadow: 0 0 0 1px $accent inset; }
+  &:active:not(:disabled) { transform: translateY(1px); }
+  &.win { border-color: #7ee0a0; box-shadow: 0 0 0 1px #7ee0a0 inset, 0 0 20px rgba(126, 224, 160, 0.3); }
+  &.miss { opacity: 0.45; border-color: rgba(255, 92, 108, 0.5); .name { text-decoration: line-through; } }
+  .tick { color: #7ee0a0; }
+  .cross { color: $danger; }
+  &:disabled { cursor: default; }
+}
+.duel_log {
+  list-style: none;
+  margin-top: 14px;
+  border-top: 1px dashed $border;
+  padding-top: 12px;
+  li {
+    padding: 6px 0;
+    color: $muted;
+    line-height: 1.5;
+    font-size: 0.9rem;
+    code { color: #cfe3ff; }
+    &.miss code { color: $danger; }
+    &.win { color: #a8e6bf; code { color: #7ee0a0; } }
+  }
+}
+.duel_solved { margin-top: 12px; color: #7ee0a0; font-weight: 600; i { margin-right: 6px; } }
+
+// JS: step-through debugger
+.debugger { display: flex; gap: 14px; flex-wrap: wrap; }
+.debugger .code_block { flex: 1; min-width: 260px; margin-top: 0; padding: 12px; }
+.dbg_line {
+  display: flex;
+  gap: 8px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  .gutter { color: $accent; width: 12px; }
+  &.done { opacity: 0.55; }
+  &.current { background: rgba(240, 192, 64, 0.12); box-shadow: -3px 0 0 $js; }
+}
+.watch {
+  flex: 1;
+  min-width: 230px;
+  background: #060a12;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 14px;
+}
+.watch_row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.watch_label { color: $muted; font-family: monospace; }
+.watch_value { color: $ink; font-family: monospace; font-size: 1.3rem; font-weight: 700; }
+.watch_value.unknown { color: $js; text-shadow: 0 0 12px rgba(240, 192, 64, 0.5); }
+.type_pill {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid $border;
+  text-transform: uppercase;
+  &.number { color: #7fd0ff; border-color: rgba(127, 208, 255, 0.4); }
+  &.string { color: $js; border-color: rgba(240, 192, 64, 0.4); }
+}
+.watch_note { color: $muted; font-size: 0.85rem; margin-top: 10px; min-height: 2.4em; line-height: 1.4; }
+.console {
+  margin-top: 12px;
+  border-top: 1px solid $border;
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  .console_label { color: $muted; font-family: monospace; font-size: 0.75rem; text-transform: uppercase; }
+  code { color: #7ee0a0; font-size: 1.1rem; font-weight: 700; min-height: 1.2em; }
+}
+.dbg_controls { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+.primary_button.small { padding: 8px 16px; font-size: 0.9rem; }
+
+.attempts { color: $muted; font-weight: 400; margin-left: 6px; font-size: 0.9rem; }
+
+// ---- Numeric keypad (door 3) ----------------------------------------------
+.keypad {
+  margin-top: 22px;
+  max-width: 300px;
+  &.disabled { opacity: 0.6; pointer-events: none; }
+}
+.keypad_display {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+  .slot {
+    width: 54px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: $js;
+    background: #060a12;
+    border: 1px solid $border;
+    border-bottom: 3px solid $border;
+    border-radius: 8px;
+    text-shadow: 0 0 12px rgba(240, 192, 64, 0.5);
+    &.filled { border-bottom-color: $js; }
+  }
+}
+.keypad_grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  .key {
+    aspect-ratio: 3 / 2;
+    font-family: monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: $ink;
+    background: linear-gradient(180deg, $panel-2, #0a1220);
+    border: 1px solid $border;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.06s ease, filter 0.12s ease, box-shadow 0.12s ease;
+    &:hover:not(:disabled) { filter: brightness(1.15); box-shadow: 0 0 0 1px $accent inset; }
+    &:active:not(:disabled) { transform: translateY(2px); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    &.key_action { color: $muted; font-size: 1.1rem; }
+  }
+}
+.keypad_enter { width: 100%; margin-top: 10px; }
+
+// ---- Letter combination padlock (door 1) ----------------------------------
+.padlock {
+  margin: 26px auto 4px;
+  width: fit-content;
+  position: relative;
+  padding-top: 34px; // room for the shackle
+  &.disabled .dial_btn { pointer-events: none; }
+}
+.padlock .shackle {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 96px;
+  height: 60px;
+  margin-left: -48px;
+  border: 10px solid #9fb2d0;
+  border-bottom: none;
+  border-radius: 48px 48px 0 0;
+  background: transparent;
+  transition: transform 0.5s cubic-bezier(0.3, 1.4, 0.5, 1), left 0.5s ease;
+  z-index: 0;
+}
+.padlock.open .shackle {
+  transform: translateY(-16px) rotate(14deg);
+  left: 58%;
+}
+.lock_body {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, #16233a, #0d1626);
+  border: 1px solid $border;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+.dials { display: flex; gap: 10px; justify-content: center; }
+.dial { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.dial_btn {
+  background: $panel-2;
+  border: 1px solid $border;
+  color: $muted;
+  width: 42px;
+  height: 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.12s ease, box-shadow 0.12s ease;
+  &:hover:not(:disabled) { color: $ink; box-shadow: 0 0 0 1px $accent inset; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+.dial_window {
+  width: 46px;
+  height: 90px;
+  background: #05070d;
+  border: 1px solid $border;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  overflow: hidden;
+  box-shadow: inset 0 8px 12px -8px #000, inset 0 -8px 12px -8px #000;
+  .ghost { color: $muted; opacity: 0.35; font-size: 1rem; line-height: 1.4; }
+  .cur {
+    color: $accent;
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.3;
+    text-shadow: 0 0 12px rgba(53, 224, 192, 0.5);
+  }
+}
+.padlock.open .dial_window .cur { color: #7ee0a0; text-shadow: 0 0 12px rgba(126, 224, 160, 0.6); }
+.padlock_open { width: 100%; margin-top: 16px; }
+
+// ---- Card feedback animations ---------------------------------------------
+.puzzle_card {
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+  &.unlocked { border-color: rgba(126, 224, 160, 0.6); box-shadow: 0 0 0 1px rgba(126, 224, 160, 0.4), 0 20px 60px rgba(0, 0, 0, 0.5); }
+  &.shake { animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+}
+@keyframes shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-8px); }
+  40%, 60% { transform: translateX(8px); }
+}
+
+@media (max-width: 620px) {
+  .room_header { flex-direction: column; align-items: stretch; }
+  .door_tabs { justify-content: space-between; }
+  h1.glow { font-size: 1.6rem; }
+  .timer { align-self: flex-start; }
+}
