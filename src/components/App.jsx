@@ -109,6 +109,14 @@ export default function App() {
     if (params.locale) merged.locale = params.locale; // ?locale= wins over defaults
     I18n.init(merged); // pick the language before any text is rendered
     setAppSettings(merged);
+    // The browser tab is player-facing too: localise the title and the document
+    // language (index.html can only ship one hardcoded guess).
+    try {
+      document.title = I18n.getTrans('i.intro_title') || merged.title;
+      document.documentElement.lang = I18n.getLocale();
+    } catch (e) {
+      /* no DOM in non-browser contexts; ignore */
+    }
     Utils.log('App settings:', merged);
   }, []);
 
@@ -236,7 +244,9 @@ export default function App() {
   if (loading) {
     return (
       <div id="global_wrapper">
-        <div className="loading">Booting the server room…</div>
+        {/* appSettings is null until I18n.init() has run, so fall back to no
+            text rather than asking for a translation with no locale set. */}
+        <div className="loading">{appSettings ? I18n.getTrans('i.loading') : ''}</div>
       </div>
     );
   }

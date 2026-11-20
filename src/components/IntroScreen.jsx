@@ -15,11 +15,11 @@ const IntroScreen = ({ onStart }) => {
           <span className="dot red" />
           <span className="dot yellow" />
           <span className="dot green" />
-          <span className="bar_title">MONOLITH::lockdown</span>
-          <span className="rec">● LIVE</span>
+          <span className="bar_title">{I18n.getTrans('i.terminal_title')}</span>
+          <span className="rec">{I18n.getTrans('i.live')}</span>
         </div>
         <div className="terminal_body">
-          <div className="lockdown_banner">⚠ SYSTEM LOCKDOWN</div>
+          <div className="lockdown_banner">{I18n.getTrans('i.lockdown_banner')}</div>
 
           <Typewriter
             className="boot_log"

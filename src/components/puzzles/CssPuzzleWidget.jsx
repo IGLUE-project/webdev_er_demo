@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { GlobalContext } from '../GlobalContext';
 
 // "Cascade Duel" — a harder, gamified CSS specificity puzzle for door 2.
 //
@@ -9,46 +10,19 @@ import React, { useState } from 'react';
 // reason they lose (progressive teaching), and a tries counter tracks the duel.
 //
 // The winning colour ('amber') is what gets typed into the lock below — the
-// server solution is unchanged.
+// server solution is unchanged. The colour names and the `origin` selectors are
+// CSS source, so they are the same in every language; the explanation of each
+// loss is prose and lives in src/config/locales.js as i.css_why_<colour>.
 const CANDIDATES = [
-  {
-    color: 'teal',
-    swatch: 'teal',
-    origin: 'inline style="color: teal"',
-    win: false,
-    why: 'Inline styles are strong (1,0,0,0) — but a normal declaration marked !important still beats them.',
-  },
-  {
-    color: 'green',
-    swatch: 'green',
-    origin: '.panel  { color: green }',
-    win: false,
-    why: 'Class selector, specificity 0,1,0. Overridden.',
-  },
-  {
-    color: 'red',
-    swatch: 'red',
-    origin: '#lock  { color: red }',
-    win: false,
-    why: 'ID selector, 1,0,0. Stronger than a class — but not stronger than !important.',
-  },
-  {
-    color: 'blue',
-    swatch: 'blue',
-    origin: 'div#lock.panel  { color: blue }',
-    win: false,
-    why: 'The HIGHEST normal specificity here (1,1,1) — the obvious guess. It still loses…',
-  },
-  {
-    color: 'amber',
-    swatch: '#FFBF00',
-    origin: '.panel  { color: amber !important }',
-    win: true,
-    why: '!important overrides every NORMAL declaration, whatever its specificity. This is what the browser paints.',
-  },
+  { color: 'teal', swatch: 'teal', origin: 'inline style="color: teal"', win: false },
+  { color: 'green', swatch: 'green', origin: '.panel  { color: green }', win: false },
+  { color: 'red', swatch: 'red', origin: '#lock  { color: red }', win: false },
+  { color: 'blue', swatch: 'blue', origin: 'div#lock.panel  { color: blue }', win: false },
+  { color: 'amber', swatch: '#FFBF00', origin: '.panel  { color: amber !important }', win: true },
 ];
 
-const CssPuzzleWidget = ({ room, onSolve, disabled }) => {
+const CssPuzzleWidget = ({ code, onSolve, disabled }) => {
+  const { I18n } = useContext(GlobalContext);
   const [picked, setPicked] = useState([]); // colors already guessed
   const [solved, setSolved] = useState(false);
 
@@ -67,12 +41,14 @@ const CssPuzzleWidget = ({ room, onSolve, disabled }) => {
   return (
     <div className="widget css_widget">
       <pre className="code_block html">
-        <code>{room.code}</code>
+        <code>{code}</code>
       </pre>
 
       <p className="duel_prompt">
-        <i className="fa fa-bolt" /> Which colour does the browser actually paint on the lock?
-        {tries > 0 && !solved && <span className="tries"> wrong guesses: {tries}</span>}
+        <i className="fa fa-bolt" /> {I18n.getTrans('i.css_duel_prompt')}
+        {tries > 0 && !solved && (
+          <span className="tries"> {I18n.getTrans('i.css_tries', { n: tries })}</span>
+        )}
       </p>
 
       <div className="swatches">
@@ -104,7 +80,7 @@ const CssPuzzleWidget = ({ room, onSolve, disabled }) => {
             const c = CANDIDATES.find((x) => x.color === col);
             return (
               <li key={col} className={c.win ? 'win' : 'miss'}>
-                <code>{c.origin}</code> — {c.why}
+                <code>{c.origin}</code> — {I18n.getTrans(`i.css_why_${c.color}`)}
               </li>
             );
           })}
@@ -113,7 +89,7 @@ const CssPuzzleWidget = ({ room, onSolve, disabled }) => {
 
       {(solved || disabled) && (
         <p className="duel_solved">
-          <i className="fa fa-unlock" /> That colour lights the lock — the bolt springs open.
+          <i className="fa fa-unlock" /> {I18n.getTrans('i.css_solved')}
         </p>
       )}
     </div>

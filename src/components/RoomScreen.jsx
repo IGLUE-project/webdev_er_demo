@@ -7,21 +7,22 @@ import HtmlPuzzleWidget from './puzzles/HtmlPuzzleWidget';
 import CssPuzzleWidget from './puzzles/CssPuzzleWidget';
 import JsPuzzleWidget from './puzzles/JsPuzzleWidget';
 
-// Pick the interactive widget for a door by its technology. `onSolve` lets a
-// widget submit the answer directly (door 2's Cascade Duel uses it, so the
-// winning colour pick springs the lock with no extra text box).
-function PuzzleWidget({ room, onSolve, disabled }) {
+// Pick the interactive widget for a door by its technology. `code` is the
+// door's already-translated snippet (from i.<key>_code). `onSolve` lets a widget
+// submit the answer directly (door 2's Cascade Duel uses it, so the winning
+// colour pick springs the lock with no extra text box).
+function PuzzleWidget({ room, code, onSolve, disabled }) {
   switch (room.tech) {
     case 'HTML':
-      return <HtmlPuzzleWidget room={room} />;
+      return <HtmlPuzzleWidget code={code} />;
     case 'CSS':
-      return <CssPuzzleWidget room={room} onSolve={onSolve} disabled={disabled} />;
+      return <CssPuzzleWidget code={code} onSolve={onSolve} disabled={disabled} />;
     case 'JavaScript':
-      return <JsPuzzleWidget room={room} />;
+      return <JsPuzzleWidget code={code} />;
     default:
       return (
         <pre className="code_block">
-          <code>{room.code}</code>
+          <code>{code}</code>
         </pre>
       );
   }
@@ -58,6 +59,11 @@ const RoomScreen = ({ rooms, solvedIds, onSubmit, timer }) => {
 
   const room = rooms[activeIndex];
   const solved = isSolved(room);
+
+  // Every piece of this door's prose lives in src/config/locales.js under the
+  // door's key, so `t('story')` reads i.d1_story, i.d2_story, ... in whatever
+  // language is active.
+  const t = (field, params) => I18n.getTrans(`i.${room.key}_${field}`, params);
 
   useEffect(() => {
     setAnswer('');
@@ -131,29 +137,30 @@ const RoomScreen = ({ rooms, solvedIds, onSubmit, timer }) => {
       <section className={`puzzle_card ${solved ? 'unlocked' : ''} ${shake ? 'shake' : ''}`}>
         <div className="puzzle_title">
           <i className={`fa ${room.icon}`} />
-          <h2>{room.title}</h2>
+          <h2>{t('title')}</h2>
           <span className={`lock_state ${solved ? 'open' : ''}`}>
             {solved ? I18n.getTrans('i.unlocked') : I18n.getTrans('i.locked')}
           </span>
         </div>
 
-        {room.story && (
+        {t('story') && (
           <div className="transmission">
             <span className="from"><i className="fa fa-robot" /> {I18n.getTrans('i.transmission')}</span>
-            <p>“{room.story}”</p>
+            <p>“{t('story')}”</p>
           </div>
         )}
 
         <div className="lesson">
           <h3>{I18n.getTrans('i.lesson')}: {room.tech}</h3>
-          <p>{room.intro}</p>
+          <p>{t('intro')}</p>
         </div>
 
         <div className="task">
           <h3>{I18n.getTrans('i.your_task')}</h3>
-          <p>{room.prompt}</p>
+          <p>{t('prompt')}</p>
           <PuzzleWidget
             room={room}
+            code={t('code')}
             disabled={solved || status === 'checking'}
             onSolve={(val) => runSubmit(val)}
           />
@@ -199,7 +206,7 @@ const RoomScreen = ({ rooms, solvedIds, onSubmit, timer }) => {
             <button type="button" className="link_button" onClick={() => setShowHint((s) => !s)}>
               <i className="fa fa-lightbulb" /> {I18n.getTrans('i.hint')}
             </button>
-            {showHint && <p className="hint_text">{room.hint}</p>}
+            {showHint && <p className="hint_text">{t('hint')}</p>}
           </div>
         )}
       </section>

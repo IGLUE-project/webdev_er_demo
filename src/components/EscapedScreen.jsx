@@ -19,7 +19,9 @@ const EscapedScreen = ({ rooms }) => {
           <ul className="recap">
             {rooms.map((r) => (
               <li key={r.id}>
-                <i className={`fa ${r.icon}`} /> <strong>{r.tech}</strong> — {r.intro.split('.')[0]}.
+                <i className={`fa ${r.icon}`} /> <strong>{r.tech}</strong> —{' '}
+                {/* First sentence of the door's (translated) field note. */}
+                {I18n.getTrans(`i.${r.key}_intro`).split('.')[0]}.
               </li>
             ))}
           </ul>

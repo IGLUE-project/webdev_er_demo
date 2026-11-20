@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { GlobalContext } from '../GlobalContext';
 
 // Interactive step-through "debugger" for the JavaScript door.
 //
@@ -7,42 +8,36 @@ import React, { useState } from 'react';
 // before computing the final value — so the player must predict the result and
 // key it into the lock themselves, rather than copying a number the widget
 // already printed. The `predict` steps show "?" instead of the value.
+//
+// The source lines come from the door's translated snippet (i.d3_code, one line
+// per step), so the comments in the code are readable in the player's language;
+// the per-step commentary lives in locales as i.js_note1 … i.js_note5.
 const STEPS = [
-  { line: 'let code = 4;', value: '4', type: 'number', note: 'starts life as a number' },
-  { line: 'code = code * 2;', value: '8', type: 'number', note: 'number × number → 8 (still a number)' },
-  {
-    line: 'code = code + "0";',
-    value: '"80"',
-    type: 'string',
-    note: 'number + STRING → the string "80". The type just flipped!',
-  },
-  {
-    line: 'code = code + 5;',
-    value: '?',
-    type: '',
-    note: 'Your turn: once code is a string, string + number = … ?',
-    predict: true,
-  },
-  {
-    line: 'console.log(code);',
-    value: '?',
-    type: '',
-    note: 'Work out what this prints, then key it into the lock. →',
-    predict: true,
-  },
+  { value: '4', type: 'number', note: 'i.js_note1' },
+  { value: '8', type: 'number', note: 'i.js_note2' },
+  { value: '"80"', type: 'string', note: 'i.js_note3' },
+  { value: '?', type: '', note: 'i.js_note4', predict: true },
+  { value: '?', type: '', note: 'i.js_note5', predict: true },
 ];
 
-const JsPuzzleWidget = () => {
+const JsPuzzleWidget = ({ code }) => {
+  const { I18n } = useContext(GlobalContext);
   const [step, setStep] = useState(-1); // -1 = not started; index of last executed line
 
-  const atEnd = step >= STEPS.length - 1;
-  const current = step >= 0 ? STEPS[step] : null;
+  // Pair each translated source line with its step. A translation with the
+  // wrong number of lines would silently desync the debugger, so clamp to the
+  // steps we have.
+  const lines = String(code || '').split('\n');
+  const steps = STEPS.map((s, i) => ({ ...s, line: lines[i] || '' }));
+
+  const atEnd = step >= steps.length - 1;
+  const current = step >= 0 ? steps[step] : null;
 
   return (
     <div className="widget js_widget">
       <div className="debugger">
         <pre className="code_block javascript">
-          {STEPS.map((s, i) => (
+          {steps.map((s, i) => (
             <div key={i} className={`dbg_line ${i === step ? 'current' : ''} ${i < step ? 'done' : ''}`}>
               <span className="gutter">{i <= step ? '▸' : ' '}</span>
               <code>{s.line}</code>
@@ -61,11 +56,11 @@ const JsPuzzleWidget = () => {
             </span>
           </div>
           <p className="watch_note">
-            {current ? current.note : 'Press Step to run the program line by line.'}
+            {current ? I18n.getTrans(current.note) : I18n.getTrans('i.js_idle')}
           </p>
 
           <div className="console">
-            <span className="console_label">console</span>
+            <span className="console_label">{I18n.getTrans('i.js_console')}</span>
             <code>{atEnd ? '?' : ''}</code>
           </div>
         </div>
@@ -76,12 +71,12 @@ const JsPuzzleWidget = () => {
           type="button"
           className="primary_button small"
           disabled={atEnd}
-          onClick={() => setStep((s) => Math.min(s + 1, STEPS.length - 1))}
+          onClick={() => setStep((s) => Math.min(s + 1, steps.length - 1))}
         >
-          <i className="fa fa-step-forward" /> Step
+          <i className="fa fa-step-forward" /> {I18n.getTrans('i.js_step')}
         </button>
         <button type="button" className="link_button" onClick={() => setStep(-1)}>
-          <i className="fa fa-undo" /> Reset
+          <i className="fa fa-undo" /> {I18n.getTrans('i.js_reset')}
         </button>
       </div>
     </div>
